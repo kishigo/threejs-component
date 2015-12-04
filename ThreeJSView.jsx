@@ -58,12 +58,10 @@ ThreeJSView = React.createClass({
 		catch (e) {
 			return new THREE.CanvasRenderer({canvas: canvas});
 		}
-		//return Detector.webgl? new THREE.WebGLRenderer({canvas: canvas}): new THREE.CanvasRenderer({canvas: canvas});
 	}
 });
 
 var stupidFunction = function stupidFunction(canvas) {
 	console.log('stupidFunction: ENTRY, canvas: ' + canvas);
-	//PixiTest.customTest('hello pixi');
 };
 

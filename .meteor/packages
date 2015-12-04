@@ -22,3 +22,4 @@ react
 react-template-helper
 meteorflux:dispatcher
 limemakers:three
+raix:eventemitter
