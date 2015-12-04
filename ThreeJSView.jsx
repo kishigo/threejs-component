@@ -7,8 +7,8 @@ var VIEW_ANGLE = 75, ASPECT = WIDTH / HEIGHT, NEAR = 0.1, FAR = 1000;
 
 ThreeJSView = React.createClass({
 	render: function () {
-		console.log('render');
-		return (<div className="ThreeJSView" align="center"
+		console.log('ThreeJSView:render');
+		return (<div className="ThreeJSView" ref='threeJSView' align="center"
 					 style={{position: 'absolute', left: 0, width: 100 + '%', height: 100 + '%'}}>
 			<canvas className='ThreeJSCanvas' ref='threeJSCanvas'
 					style={{display: 'table-row', backgroundColor: '#222222'}}></canvas>
@@ -44,6 +44,7 @@ ThreeJSView = React.createClass({
 			//threeControls.addEventListener( 'change', render );
 		}
 		stupidFunction(renderCanvas);
+		this.configureThreeJSView(renderCanvas);
 		this.customTest('hello internal');
 	},
 	customTest: function (xxx) {
@@ -58,6 +59,22 @@ ThreeJSView = React.createClass({
 		catch (e) {
 			return new THREE.CanvasRenderer({canvas: canvas});
 		}
+	},
+	configureThreeJSView: function configureThreeJSView (canvas) {
+		var renderContainer = this.refs.threeJSView;
+		var width;
+		var height;
+		if (renderContainer) {
+			width = renderContainer.clientWidth;
+			height = renderContainer.clientHeight;
+		}
+		else {
+			width = 800;
+			height = 600;
+		}
+		canvas.height = height;
+		canvas.width = width;
+		threeControls.handleResize();
 	}
 });
 
