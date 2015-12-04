@@ -3,8 +3,8 @@ if (Meteor.isClient) {
 	Session.setDefault('counter', 0);
 
 	Template.hello.helpers({
-		ThreeJSView: function () {
-			return ThreeJSView;
+		ThreeJSViewContainer: function () {
+			return ThreeJSViewContainer;
 		},
 		counter: function () {
 			return Session.get('counter');
