@@ -29,6 +29,10 @@ var WIDTH = 400, HEIGHT = 300;
 var VIEW_ANGLE = 75, ASPECT = WIDTH / HEIGHT, NEAR = 0.1, FAR = 1000;
 
 ThreeJSView = React.createClass({
+    proptypes: {
+        optionalCanvasWidth: React.PropTypes.number,
+        optionalCanvasHeight: React.PropTypes.number
+    },
 	render: function () {
 		console.log('ThreeJSView:render');
 		return (<div className="ThreeJSView" ref='threeJSView' align="center"

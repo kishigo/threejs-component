@@ -21,6 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+/**
+ * Act as a parent to the ThreeJSView component to allow that component to be reusable
+ */
 ThreeJSViewContainer = React.createClass({
     render: function render () {
         console.log('ThreeJSViewContainer:render');
