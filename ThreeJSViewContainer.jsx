@@ -33,13 +33,26 @@ ThreeJSViewContainer = React.createClass({
     },
     componentDidMount: function componentDidMount () {
         console.log('ThreeJSViewContainer:componentDidMount');
-		MBus.subscribe('_change_', function(message) {
-			console.log('MBus: _change_, fakeState: ' + fakeState);
+		//MBus.subscribe('_change_', function(message) {
+		//	console.log('MBus: _change_, fakeState: ' + fakeState);
+		//	let state = {fubar: fakeState};
+		//	this.setState(state);
+		//	fakeState++;
+		//}.bind(this));
+		listener = function (bar) {
+			console.log('Event: _change_');
 			let state = {fubar: fakeState};
 			this.setState(state);
-			fakeState++;
-		}.bind(this));
+			throw 'errortest';
+		}.bind(this);
+		var listener2 = function (bar) {
+			console.log('Event[2]: _change_');
+			let state = {fubar: fakeState};
+		}.bind(this);
+		EventNew.on('_change_', listener);
+		EventNew.on('_change_', listener2);
     }
 });
 
 var fakeState = 0;
+var listener;

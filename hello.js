@@ -1,4 +1,6 @@
 if (Meteor.isClient) {
+	EventNew = new EventEmitterEx();
+	
 	// counter starts at 0
 	Session.setDefault('counter', 0);
 

@@ -26,7 +26,8 @@ ThreeJSViewActionStore = (function () {
 		switch (action.type) {
 		case 'TEST_TRIGGER':
 			console.log('TEST_TRIGGER');
-			MBus.publish('_change_', null);
+			//MBus.publish('_change_', null);
+			EventNew.emit('_change_', {data: null});
 			break;
 		}
 	});
