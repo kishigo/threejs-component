@@ -21,25 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/**
- * Act as a parent to the ThreeJSView component to allow that component to be reusable
- */
-ThreeJSViewContainer = React.createClass({
-	threeJSViewData: {canvasWidth: 900, canvasHeight: 700, testMode: true},
-    render: function render () {
-        console.log('ThreeJSViewContainer:render, threeJSViewData: ' + this.threeJSViewData);
-		// Use POJS so we can pass an entire props object instead of specifying individual fields
-		return React.createElement(ThreeJSView, this.threeJSViewData);
-    },
-    componentDidMount: function componentDidMount () {
-        console.log('ThreeJSViewContainer:componentDidMount');
-		MBus.subscribe('_change_', function(message) {
-			console.log('MBus: _change_, fakeState: ' + fakeState);
-			let state = {fubar: fakeState};
-			this.setState(state);
-			fakeState++;
-		}.bind(this));
-    }
-});
-
-var fakeState = 0;
+ThreeJSViewActionStore = (function () {
+	Dispatcher.register(function (action) {
+		switch (action.type) {
+		case 'TEST_TRIGGER':
+			console.log('TEST_TRIGGER');
+			MBus.publish('_change_', null);
+			break;
+		}
+	});
+})();

@@ -30,9 +30,17 @@ var VIEW_ANGLE = 75, ASPECT = WIDTH / HEIGHT, NEAR = 0.1, FAR = 1000;
 
 ThreeJSView = React.createClass({
     proptypes: {
-        optionalCanvasWidth: React.PropTypes.number,
-        optionalCanvasHeight: React.PropTypes.number
+		// optional
+		testMode: React.PropTypes.bool,
+        canvasWidth: React.PropTypes.number.isRequired,
+        canvasHeight: React.PropTypes.number.isRequired
     },
+	getDefaultProps: function () {
+		return {
+			canvasWidth: 800,
+			canvasHeight: 600
+		};
+	},
 	render: function () {
 		console.log('ThreeJSView:render');
 		return (<div className="ThreeJSView" ref='threeJSView' align="center"
@@ -74,6 +82,9 @@ ThreeJSView = React.createClass({
 		this.configureThreeJSView(renderCanvas);
 		this.customTest('hello internal');
 	},
+	shouldComponentUpdate: function shouldComponentUpdate (nextProps, nextState) {
+		return !this.isMounted();
+	},
 	customTest: function (xxx) {
 		console.log('customTest, xxx: ' + xxx);
 	},
@@ -91,13 +102,14 @@ ThreeJSView = React.createClass({
 		var renderContainer = this.refs.threeJSView;
 		var width;
 		var height;
-		if (renderContainer) {
+		// set area either from container or props if no container
+		if (!this.props.testMode && renderContainer) {
 			width = renderContainer.clientWidth;
 			height = renderContainer.clientHeight;
 		}
 		else {
-			width = 800;
-			height = 600;
+			width = this.props.canvasWidth;
+			height = this.props.canvasHeight;
 		}
 		canvas.height = height;
 		canvas.width = width;
