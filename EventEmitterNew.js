@@ -22,19 +22,29 @@
  * THE SOFTWARE.
  */
 EventEmitterEx = class EventEmitterEx extends EventEmitter {
-	constructor () {
+	/**
+	 * This callback type is called 'exceptionHandler'
+	 * @callback exceptionHandler
+	 * @param {*} exceptionData
+	 */
+	/**
+	 * If you throw out of throwHandler, the downstream listeners are skipped
+	 * @param {?exceptionHandler} [exceptionHandler] optional if you want to handle any errors
+	 */
+	constructor (exceptionHandler) {
 		super();
+		this.exceptionHandler = exceptionHandler;
 	}
 
 	/**
 	 * Add try-catch for robustness
-	 * @param {Array} listenerArray array of subscribed listeners
+	 * @param {Object[]} listenerArray array of subscribed listeners
 	 * @param {Object} args event data
 	 * @returns {number} number of listeners called
 	 * @private
 	 */
 	_runCallbacksCatchThrow (listenerArray, args) {
-		//var self = this;
+		var self = this;
 		// count of listeners triggered
 		var count = 0;
 		// Check if we have anything to work with
@@ -45,10 +55,12 @@ EventEmitterEx = class EventEmitterEx extends EventEmitter {
 				count++;
 				// Send the job to the eventloop
 				try {
-					listener.apply(this, args);
+					listener.apply(self, args);
 				}
 				catch (e) {
-
+					if (self.exceptionHandler) {
+						self.exceptionHandler(e);
+					}
 				}
 			});
 		}
@@ -63,25 +75,25 @@ EventEmitterEx = class EventEmitterEx extends EventEmitter {
 	 * @returns {boolean} true if there were listeners
 	 */
 	emit (eventName /* arguments */) {
-		//var self = this;
+		var self = this;
 		// make argument list to pass on to listeners
 		var args = _.rest(arguments);
-
+	
 		// Count listeners triggered
 		var count = 0;
-
+	
 		// Swap once list
 		var onceList = this._eventEmitter.onceListeners[eventName];
-
+	
 		// Empty the once list
-		this._eventEmitter.onceListeners[eventName] = [];
-
+		self._eventEmitter.onceListeners[eventName] = [];
+	
 		// Trigger on listeners
-		count += this._runCallbacksCatchThrow.call(this, this._eventEmitter.onListeners[eventName], args);
-
+		count += this._runCallbacksCatchThrow.call(self, self._eventEmitter.onListeners[eventName], args);
+	
 		// Trigger once listeners
-		count += this._runCallbacksCatchThrow.call(this, onceList, args);
-
+		count += self._runCallbacksCatchThrow.call(self, onceList, args);
+	
 		// Returns true if event had listeners, false otherwise.
 		return (count > 0);
 	}

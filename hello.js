@@ -1,4 +1,7 @@
 if (Meteor.isClient) {
+	var exceptionHandler = function exceptionHandler (e) {
+		throw e;
+	};
 	EventNew = new EventEmitterEx();
 	
 	// counter starts at 0
