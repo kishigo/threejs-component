@@ -58,6 +58,7 @@ ThreeJSView = React.createClass({
 		// Use a ref to get the underlying DOM element once we are mounted
 		let renderCanvas = this.refs.threeJSCanvas;
 		console.log('componentDidMount, canvas: ' + renderCanvas);
+        this.configureCanvas(renderCanvas);
 		if (threeScene === null) {
 			threeScene = new THREE.Scene();
 		}
@@ -154,6 +155,22 @@ ThreeJSView = React.createClass({
 			return new THREE.CanvasRenderer({canvas: canvas});
 		}
 	},
+    configureCanvas: function configureCanvas (canvas) {
+        var renderContainer = this.refs.threeJSView;
+        var width;
+        var height;
+        // set area either from container or props if no container
+        if (!this.props.testMode && renderContainer) {
+            width = renderContainer.clientWidth;
+            height = renderContainer.clientHeight;
+        }
+        else {
+            width = this.props.canvasWidth;
+            height = this.props.canvasHeight;
+        }
+        canvas.height = height;
+        canvas.width = width;
+    },
 	configureThreeJSView: function configureThreeJSView (canvas) {
 		var renderContainer = this.refs.threeJSView;
 		var width;
