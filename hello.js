@@ -2,7 +2,7 @@ if (Meteor.isClient) {
 	var exceptionHandler = function exceptionHandler (e) {
 		throw e;
 	};
-	EventNew = new EventEmitterEx();
+	EventEx = new EventEmitterEx();
 	
 	// counter starts at 0
 	Session.setDefault('counter', 0);

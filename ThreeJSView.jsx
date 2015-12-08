@@ -28,12 +28,17 @@ var threeControls = null;
 var WIDTH = 400, HEIGHT = 300;
 var VIEW_ANGLE = 75, ASPECT = WIDTH / HEIGHT, NEAR = 0.1, FAR = 1000;
 
+CameraType = {
+	perspective: 0,
+	orthographic: 1
+};
+
 ThreeJSView = React.createClass({
     proptypes: {
 		// optional
 		testMode: React.PropTypes.bool,
         canvasWidth: React.PropTypes.number.isRequired,
-        canvasHeight: React.PropTypes.number.isRequired
+        canvasHeight: React.PropTypes.number.isRequired,
     },
 	getDefaultProps: function () {
 		return {
@@ -57,7 +62,14 @@ ThreeJSView = React.createClass({
 			threeScene = new THREE.Scene();
 		}
 		if (threeCamera === null) {
-			threeCamera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+			if (this.props.state.camera === CameraType.perspective) {
+				threeCamera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+			}
+			else {
+				let width = this.props.canvasWidth, height = this.props.canvasHeight;
+				threeCamera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, NEAR, FAR );
+
+			}
 		}
 		if (threeRenderer === null) {
 			threeRenderer = this.getRenderer(renderCanvas);
@@ -81,8 +93,20 @@ ThreeJSView = React.createClass({
 		stupidFunction(renderCanvas);
 		this.configureThreeJSView(renderCanvas);
 		this.customTest('hello internal');
+		let dims = {width: 10, height: 4};
+		var ground = this.buildGround(dims);
+		threeScene.add(ground);
+		
+		var light = new THREE.SpotLight(0xFFFFFF);
+		light.position.set(100,100,2500);
+		threeScene.add(light);
+
+		threeCamera.position.z = 100;
+		
+		threeRenderer.render(threeScene, threeCamera);
 	},
 	shouldComponentUpdate: function shouldComponentUpdate (nextProps, nextState) {
+		console.log('ThreeJSView: shouldComponentUpdate: ENTRY');
 		return !this.isMounted();
 	},
 	customTest: function (xxx) {
@@ -114,6 +138,18 @@ ThreeJSView = React.createClass({
 		canvas.height = height;
 		canvas.width = width;
 		threeControls.handleResize();
+	},
+	buildGround: function buildGround (dims) {
+		var w = dims.width * 10;
+		var h = dims.length * 10;
+		var geometry = new THREE.PlaneGeometry(w, h);
+		//var material = new THREE.MeshPhongMaterial({ ambient: 0x050505, color: 0x0033ff, specular: 0x555555, shininess: 30 });
+		var material = new THREE.MeshBasicMaterial( { color: 0xd2b48c } );
+		var mesh = new THREE.Mesh(geometry, material);
+		mesh.position.y = -20;
+		mesh.rotation.x = -Math.PI/2; //-90 degrees around the xaxis
+		mesh.doubleSided = true;
+		return mesh;
 	}
 });
 

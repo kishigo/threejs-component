@@ -26,6 +26,12 @@
  */
 ThreeJSViewContainer = React.createClass({
 	threeJSViewData: {canvasWidth: 900, canvasHeight: 700, testMode: true},
+	getInitialState: function () {
+		console.log('getInitialState');
+		let state = ThreeJSViewActionStore.getAll();
+		this.threeJSViewData.state = state;
+		return state;
+	},
     render: function render () {
         console.log('ThreeJSViewContainer:render, threeJSViewData: ' + this.threeJSViewData);
 		// Use POJS so we can pass an entire props object instead of specifying individual fields
@@ -48,9 +54,10 @@ ThreeJSViewContainer = React.createClass({
 		var listener2 = function (bar) {
 			console.log('Event[2]: _change_');
 			let state = {fubar: fakeState};
+			this.setState(state);
 		}.bind(this);
-		EventNew.on('_change_', listener);
-		EventNew.on('_change_', listener2);
+		EventEx.on('_change_', listener);
+		EventEx.on('_change_', listener2);
     }
 });
 

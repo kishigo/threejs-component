@@ -27,8 +27,25 @@ ThreeJSViewActionStore = (function () {
 		case 'TEST_TRIGGER':
 			console.log('TEST_TRIGGER');
 			//MBus.publish('_change_', null);
-			EventNew.emit('_change_', {data: null});
+			EventEx.emit('_change_', {data: null});
 			break;
 		}
 	});
+	
+	var _state = {
+		camera: CameraType.perspective
+	};
+	
+	var _getAll = function _getAll () {
+		return _state;
+	};
+	
+	var _getState = function _getState () {
+		return _state;
+	};
+	
+	return {
+		getAll: _getAll,
+		getState: _getState
+	}
 })();
