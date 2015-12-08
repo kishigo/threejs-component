@@ -17,10 +17,45 @@ if (Meteor.isClient) {
 	});
 
 	Template.hello.events({
-		'click button': function () {
+		'click #zoomIn': function () {
 			// increment the counter when button is clicked
-			Session.set('counter', Session.get('counter') + 1);
-			Dispatcher.dispatch('TEST_TRIGGER');
+			//Session.set('counter', Session.get('counter') + 1);
+			Dispatcher.dispatch('ZOOM_IN');
+		},
+		'click #zoomOut': function () {
+			// increment the counter when button is clicked
+			//Session.set('counter', Session.get('counter') - 1);
+			Dispatcher.dispatch('ZOOM_OUT');
+		},
+		'click #rotRt': function () {
+			// increment the counter when button is clicked
+			//Session.set('counter', Session.get('counter') + 1);
+			Dispatcher.dispatch('ROT_RT');
+		},
+		'click #rotLt': function () {
+			// increment the counter when button is clicked
+			//Session.set('counter', Session.get('counter') + 1);
+			Dispatcher.dispatch('ROT_RT');
+		},
+		'click #panRt': function () {
+			// increment the counter when button is clicked
+			//Session.set('counter', Session.get('counter') + 1);
+			Dispatcher.dispatch('PAN_RT');
+		},
+		'click #panLt': function () {
+			// increment the counter when button is clicked
+			//Session.set('counter', Session.get('counter') + 1);
+			Dispatcher.dispatch('PAN_LT');
+		},
+		'click #cameraUp': function () {
+			// increment the counter when button is clicked
+			//Session.set('counter', Session.get('counter') + 1);
+			Dispatcher.dispatch('CAMERA_UP');
+		},
+		'click #cameraDn': function () {
+			// increment the counter when button is clicked
+			//Session.set('counter', Session.get('counter') + 1);
+			Dispatcher.dispatch('CAMERA_DN');
 		}
 	});
 }

@@ -29,6 +29,38 @@ ThreeJSViewActionStore = (function () {
 			//MBus.publish('_change_', null);
 			EventEx.emit('_change_', {data: null});
 			break;
+		case 'ZOOM_IN':
+			_state.action = 'ZOOM_IN';
+			EventEx.emit('_change_', {data: null});
+			break;
+		case 'ZOOM_OUT':
+			_state.action = 'ZOOM_OUT';
+			EventEx.emit('_change_', {data: null});
+			break;
+		case 'ROT_RT':
+			_state.action = 'ROT_RT';
+			EventEx.emit('_change_', {data: null});
+			break;
+		case 'ROT_LT':
+			_state.action = 'ROT_LT';
+			EventEx.emit('_change_', {data: null});
+			break;
+		case 'PAN_RT':
+			_state.action = 'PAN_RT';
+			EventEx.emit('_change_', {data: null});
+			break;
+		case 'PAN_LT':
+			_state.action = 'PAN_LT';
+			EventEx.emit('_change_', {data: null});
+			break;
+		case 'CAMERA_UP':
+			_state.action = 'CAMERA_UP';
+			EventEx.emit('_change_', {data: null});
+			break;
+		case 'CAMERA_DN':
+			_state.action = 'CAMERA_DN';
+			EventEx.emit('_change_', {data: null});
+			break;
 		}
 	});
 	

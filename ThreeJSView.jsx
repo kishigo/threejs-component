@@ -88,7 +88,7 @@ ThreeJSView = React.createClass({
 
 			threeControls.keys = [ 65, 83, 68 ];
 
-			//threeControls.addEventListener( 'change', render );
+			threeControls.addEventListener( 'change', this.render );
 		}
 		stupidFunction(renderCanvas);
 		this.configureThreeJSView(renderCanvas);
@@ -102,11 +102,43 @@ ThreeJSView = React.createClass({
 		threeScene.add(light);
 
 		threeCamera.position.z = 100;
-		
-		threeRenderer.render(threeScene, threeCamera);
+		this.runAnimation = true;
+		this.threeAnimate();
+		this.threeRender();
 	},
 	shouldComponentUpdate: function shouldComponentUpdate (nextProps, nextState) {
 		console.log('ThreeJSView: shouldComponentUpdate: ENTRY');
+		switch (nextProps.state.action) {
+		case 'ZOOM_IN':
+			threeCamera.position.z -= 10;
+			break;
+		case 'ZOOM_OUT':
+			threeCamera.position.z += 10;
+			break;
+		case 'ROT_RT':
+			this.rotateCameraAroundScene(.02, 'right');
+			break;
+		case 'ROT_LT':
+			this.rotateCameraAroundScene(.02, 'left');
+			break;
+		case 'PAN_RT':
+			this.panCameraAcrossScene('right');
+			break;
+		case 'PAN_LT':
+			this.panCameraAcrossScene('left');
+			break;
+		case 'CAMERA_UP':
+			threeCamera.position.y += 10;
+			break;
+		case 'CAMERA_DN':
+			threeCamera.position.y -= 10;
+			break;
+		}
+		
+		//let renderCanvas = this.refs.threeJSCanvas;
+		//renderCanvas.width = 300;
+		//renderCanvas.height = 300;
+		//threeControls.handleResize();
 		return !this.isMounted();
 	},
 	customTest: function (xxx) {
@@ -141,7 +173,7 @@ ThreeJSView = React.createClass({
 	},
 	buildGround: function buildGround (dims) {
 		var w = dims.width * 10;
-		var h = dims.length * 10;
+		var h = dims.height * 10;
 		var geometry = new THREE.PlaneGeometry(w, h);
 		//var material = new THREE.MeshPhongMaterial({ ambient: 0x050505, color: 0x0033ff, specular: 0x555555, shininess: 30 });
 		var material = new THREE.MeshBasicMaterial( { color: 0xd2b48c } );
@@ -150,6 +182,40 @@ ThreeJSView = React.createClass({
 		mesh.rotation.x = -Math.PI/2; //-90 degrees around the xaxis
 		mesh.doubleSided = true;
 		return mesh;
+	},
+	threeRender: function threeRender () {
+		threeRenderer.render(threeScene, threeCamera);
+	},
+	threeAnimate: function threeAnimate () {
+		if (this.runAnimation) {
+			requestAnimationFrame(this.threeAnimate);
+			threeControls.update();
+			threeRenderer.render(threeScene, threeCamera)
+		}
+	},
+	rotateCameraAroundScene: function rotateCameraAroundScene (rotSpeed, direction) {
+		var x = threeCamera.position.x,
+			z = threeCamera.position.z;
+	
+		if (direction === 'left'){
+			threeCamera.position.x = x * Math.cos(rotSpeed) + z * Math.sin(rotSpeed);
+			threeCamera.position.z = z * Math.cos(rotSpeed) - x * Math.sin(rotSpeed);
+		} else if (direction === 'right'){
+			threeCamera.position.x = x * Math.cos(rotSpeed) - z * Math.sin(rotSpeed);
+			threeCamera.position.z = z * Math.cos(rotSpeed) + x * Math.sin(rotSpeed);
+		}
+	
+		threeCamera.lookAt(threeScene.position);
+	},
+	panCameraAcrossScene: function panCameraAcrossScene (direction) {
+		let delta = 5;
+		if (direction === 'left') {
+			threeScene.position.x -= delta;
+		}
+		else if (direction === 'right') {
+			threeScene.position.x += delta;
+		}
+		threeCamera.lookAt(threeScene.position);
 	}
 });
 

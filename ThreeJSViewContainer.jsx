@@ -47,9 +47,8 @@ ThreeJSViewContainer = React.createClass({
 		//}.bind(this));
 		listener = function (bar) {
 			console.log('Event: _change_');
-			let state = {fubar: fakeState};
+			let state = ThreeJSViewActionStore.getAll();
 			this.setState(state);
-			throw 'errortest';
 		}.bind(this);
 		var listener2 = function (bar) {
 			console.log('Event[2]: _change_');
@@ -57,7 +56,7 @@ ThreeJSViewContainer = React.createClass({
 			this.setState(state);
 		}.bind(this);
 		EventEx.on('_change_', listener);
-		EventEx.on('_change_', listener2);
+		//EventEx.on('_change_', listener2);
     }
 });
 

@@ -9,7 +9,14 @@
 </body>
 
 <template name="hello">
-    <button>Click Me</button>
+    <button id="zoomIn">ZoomIn</button>
+    <button id="zoomOut">ZoomOut</button>
+    <button id="panRt">Pan Right</button>
+    <button id="panLt">Pan Left</button>
+    <button id="rotRt">Rotate Right</button>
+    <button id="rotLt">Rotate Left</button>
+    <button id="cameraUp">Camera Up</button>
+    <button id="cameraDn">Camera Down</button>
     <p>You've pressed the button {{counter}} times.</p>
 
     <div>{{> React component=ThreeJSViewContainer userId=_id}}</div>
