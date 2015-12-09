@@ -4,6 +4,11 @@
 
 <body>
 <h1>Welcome to Meteor!</h1>
+<div>
+    This is an example of embedding a React component which contains a three.js canvas into a containing Blaze template. <br>
+    Simple commands are available to manipulate the 3D view and a sample plane is displayed by default. <br>
+    This is an atypical React component as it does not use VDom for three.js rendering <br>
+</div>
 
 {{> hello}}
 </body>
@@ -18,7 +23,6 @@
     <button id="cameraUp">Camera Up</button>
     <button id="cameraDn">Camera Down</button>
     <button id="sampleMesh">Sample Mesh</button>
-    <p>You've pressed the button {{counter}} times.</p>
 
     <div>{{> React component=ThreeJSViewContainer userId=_id}}</div>
 </template>
