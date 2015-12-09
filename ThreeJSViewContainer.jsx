@@ -25,11 +25,12 @@
  * Act as a parent to the ThreeJSView component to allow that component to be reusable
  */
 ThreeJSViewContainer = React.createClass({
-	threeJSViewData: {canvasWidth: 900, canvasHeight: 700, testMode: true},
+	threeJSViewData: {canvasWidth: 900, canvasHeight: 700, testMode: true, WIDTH: 400, HEIGHT: 300, VIEW_ANGLE: 75, NEAR: 0.1, FAR: 1000},
 	getInitialState: function () {
 		console.log('getInitialState');
 		let state = ThreeJSViewActionStore.getAll();
 		this.threeJSViewData.state = state;
+		this.threeJSViewData.ASPECT = this.threeJSViewData.WIDTH / this.threeJSViewData.HEIGHT;
 		return state;
 	},
     render: function render () {
@@ -39,24 +40,12 @@ ThreeJSViewContainer = React.createClass({
     },
     componentDidMount: function componentDidMount () {
         console.log('ThreeJSViewContainer:componentDidMount');
-		//MBus.subscribe('_change_', function(message) {
-		//	console.log('MBus: _change_, fakeState: ' + fakeState);
-		//	let state = {fubar: fakeState};
-		//	this.setState(state);
-		//	fakeState++;
-		//}.bind(this));
 		listener = function (bar) {
-			console.log('Event: _change_');
+			console.log('Event: ThreeJSViewActionStore');
 			let state = ThreeJSViewActionStore.getAll();
 			this.setState(state);
 		}.bind(this);
-		var listener2 = function (bar) {
-			console.log('Event[2]: _change_');
-			let state = {fubar: fakeState};
-			this.setState(state);
-		}.bind(this);
-		EventEx.on('_change_', listener);
-		//EventEx.on('_change_', listener2);
+		EventEx.on('ThreeJSViewActionStore', listener);
     }
 });
 

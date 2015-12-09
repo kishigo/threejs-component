@@ -35,7 +35,7 @@ if (Meteor.isClient) {
 		'click #rotLt': function () {
 			// increment the counter when button is clicked
 			//Session.set('counter', Session.get('counter') + 1);
-			Dispatcher.dispatch('ROT_RT');
+			Dispatcher.dispatch('ROT_LT');
 		},
 		'click #panRt': function () {
 			// increment the counter when button is clicked
@@ -56,6 +56,9 @@ if (Meteor.isClient) {
 			// increment the counter when button is clicked
 			//Session.set('counter', Session.get('counter') + 1);
 			Dispatcher.dispatch('CAMERA_DN');
+		},
+		'click #sampleMesh': function () {
+			Dispatcher.dispatch('TEST_MESH');
 		}
 	});
 }

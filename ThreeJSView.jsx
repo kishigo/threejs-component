@@ -21,12 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-var threeScene = null;
-var threeRenderer = null;
-var threeCamera = null;
-var threeControls = null;
-var WIDTH = 400, HEIGHT = 300;
-var VIEW_ANGLE = 75, ASPECT = WIDTH / HEIGHT, NEAR = 0.1, FAR = 1000;
 
 CameraType = {
 	perspective: 0,
@@ -38,7 +32,7 @@ ThreeJSView = React.createClass({
 		// optional
 		testMode: React.PropTypes.bool,
         canvasWidth: React.PropTypes.number.isRequired,
-        canvasHeight: React.PropTypes.number.isRequired,
+        canvasHeight: React.PropTypes.number.isRequired
     },
 	getDefaultProps: function () {
 		return {
@@ -59,87 +53,80 @@ ThreeJSView = React.createClass({
 		let renderCanvas = this.refs.threeJSCanvas;
 		console.log('componentDidMount, canvas: ' + renderCanvas);
         this.configureCanvas(renderCanvas);
-		if (threeScene === null) {
-			threeScene = new THREE.Scene();
+		if (!this.threeScene) {
+			this.threeScene = new THREE.Scene();
 		}
-		if (threeCamera === null) {
+		if (!this.threeCamera) {
 			if (this.props.state.camera === CameraType.perspective) {
-				threeCamera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+				this.threeCamera = new THREE.PerspectiveCamera(this.props.VIEW_ANGLE, this.props.ASPECT, this.props.NEAR, this.props.FAR);
 			}
 			else {
 				let width = this.props.canvasWidth, height = this.props.canvasHeight;
-				threeCamera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, NEAR, FAR );
+				this.threeCamera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, this.props.NEAR, this.props.FAR );
 
 			}
 		}
-		if (threeRenderer === null) {
-			threeRenderer = this.getRenderer(renderCanvas);
+		if (!this.threeRenderer) {
+			this.threeRenderer = this.getRenderer(renderCanvas);
 		}
-		if (threeControls === null) {
-			threeControls = new THREE.TrackballControls(threeCamera);
-			threeControls.rotateSpeed = 1.0;
-			threeControls.zoomSpeed = 1.2;
-			threeControls.panSpeed = 0.8;
+		if (!this.threeControls) {
+			this.threeControls = new THREE.TrackballControls(this.threeCamera);
+			this.threeControls.rotateSpeed = 1.0;
+			this.threeControls.zoomSpeed = 1.2;
+			this.threeControls.panSpeed = 0.8;
 
-			threeControls.noZoom = false;
-			threeControls.noPan = false;
+			this.threeControls.noZoom = false;
+			this.threeControls.noPan = false;
 
-			threeControls.staticMoving = true;
-			threeControls.dynamicDampingFactor = 0.3;
+			this.threeControls.staticMoving = true;
+			this.threeControls.dynamicDampingFactor = 0.3;
 
-			threeControls.keys = [ 65, 83, 68 ];
+			this.threeControls.keys = [ 65, 83, 68 ];
 
-			threeControls.addEventListener( 'change', this.render );
+			this.threeControls.addEventListener( 'change', this.render );
 		}
 		stupidFunction(renderCanvas);
 		this.configureThreeJSView(renderCanvas);
 		this.customTest('hello internal');
 		let dims = {width: 10, height: 4};
 		var ground = this.buildGround(dims);
-		threeScene.add(ground);
+		this.threeScene.add(ground);
 		
 		var light = new THREE.SpotLight(0xFFFFFF);
 		light.position.set(100,100,2500);
-		threeScene.add(light);
+		this.threeScene.add(light);
 
-		threeCamera.position.z = 100;
+		this.threeCamera.position.z = 100;
 		this.runAnimation = true;
 		this.threeAnimate();
 		this.threeRender();
 	},
+	componentWillUnmount: function componentWillUnmount () {
+		this.threeControls = this.threeScene = this.threeCamera = this.threeRenderer = null;
+	},
 	shouldComponentUpdate: function shouldComponentUpdate (nextProps, nextState) {
 		console.log('ThreeJSView: shouldComponentUpdate: ENTRY');
-		switch (nextProps.state.action) {
-		case 'ZOOM_IN':
-			threeCamera.position.z -= 10;
+		let action = nextProps.state.action;
+		var delta;
+		switch (action.constructor.name) {
+		case 'ActionZoom':
+			delta = (action.direction === ActionType.ZoomIn) ? -action.zUnits : action.zUnits;
+			this.threeCamera.position.z += delta;
 			break;
-		case 'ZOOM_OUT':
-			threeCamera.position.z += 10;
+		case 'ActionRotate':
+			this.rotateCameraAroundScene(action.speed, action.direction);
 			break;
-		case 'ROT_RT':
-			this.rotateCameraAroundScene(.02, 'right');
+		case 'ActionPan':
+			this.panCameraAcrossScene(action.direction, action.delta);
 			break;
-		case 'ROT_LT':
-			this.rotateCameraAroundScene(.02, 'left');
+		case 'ActionCamera':
+			delta = (action.direction === ActionType.CameraUp) ? action.delta : -action.delta;
+			this.threeCamera.position.y += delta;
 			break;
-		case 'PAN_RT':
-			this.panCameraAcrossScene('right');
-			break;
-		case 'PAN_LT':
-			this.panCameraAcrossScene('left');
-			break;
-		case 'CAMERA_UP':
-			threeCamera.position.y += 10;
-			break;
-		case 'CAMERA_DN':
-			threeCamera.position.y -= 10;
+		case 'ActionAddMesh':
+			this.threeScene.add(action.mesh);
 			break;
 		}
-		
-		//let renderCanvas = this.refs.threeJSCanvas;
-		//renderCanvas.width = 300;
-		//renderCanvas.height = 300;
-		//threeControls.handleResize();
 		return !this.isMounted();
 	},
 	customTest: function (xxx) {
@@ -186,7 +173,7 @@ ThreeJSView = React.createClass({
 		}
 		canvas.height = height;
 		canvas.width = width;
-		threeControls.handleResize();
+		this.threeControls.handleResize();
 	},
 	buildGround: function buildGround (dims) {
 		var w = dims.width * 10;
@@ -201,38 +188,37 @@ ThreeJSView = React.createClass({
 		return mesh;
 	},
 	threeRender: function threeRender () {
-		threeRenderer.render(threeScene, threeCamera);
+		this.threeRenderer.render(this.threeScene, this.threeCamera);
 	},
 	threeAnimate: function threeAnimate () {
 		if (this.runAnimation) {
 			requestAnimationFrame(this.threeAnimate);
-			threeControls.update();
-			threeRenderer.render(threeScene, threeCamera)
+			this.threeControls.update();
+			this.threeRenderer.render(this.threeScene, this.threeCamera)
 		}
 	},
 	rotateCameraAroundScene: function rotateCameraAroundScene (rotSpeed, direction) {
-		var x = threeCamera.position.x,
-			z = threeCamera.position.z;
+		var x = this.threeCamera.position.x,
+			z = this.threeCamera.position.z;
 	
-		if (direction === 'left'){
-			threeCamera.position.x = x * Math.cos(rotSpeed) + z * Math.sin(rotSpeed);
-			threeCamera.position.z = z * Math.cos(rotSpeed) - x * Math.sin(rotSpeed);
-		} else if (direction === 'right'){
-			threeCamera.position.x = x * Math.cos(rotSpeed) - z * Math.sin(rotSpeed);
-			threeCamera.position.z = z * Math.cos(rotSpeed) + x * Math.sin(rotSpeed);
+		if (direction === ActionType.RotateLt){
+			this.threeCamera.position.x = x * Math.cos(rotSpeed) + z * Math.sin(rotSpeed);
+			this.threeCamera.position.z = z * Math.cos(rotSpeed) - x * Math.sin(rotSpeed);
+		} else if (direction === ActionType.RotateRt){
+			this.threeCamera.position.x = x * Math.cos(rotSpeed) - z * Math.sin(rotSpeed);
+			this.threeCamera.position.z = z * Math.cos(rotSpeed) + x * Math.sin(rotSpeed);
 		}
 	
-		threeCamera.lookAt(threeScene.position);
+		this.threeCamera.lookAt(this.threeScene.position);
 	},
-	panCameraAcrossScene: function panCameraAcrossScene (direction) {
-		let delta = 5;
-		if (direction === 'left') {
-			threeScene.position.x -= delta;
+	panCameraAcrossScene: function panCameraAcrossScene (direction, delta) {
+		if (direction === ActionType.PanLt) {
+			this.threeScene.position.x -= delta;
 		}
-		else if (direction === 'right') {
-			threeScene.position.x += delta;
+		else if (direction === ActionType.PanRt) {
+			this.threeScene.position.x += delta;
 		}
-		threeCamera.lookAt(threeScene.position);
+		this.threeCamera.lookAt(this.threeScene.position);
 	}
 });
 
