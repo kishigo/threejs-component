@@ -160,6 +160,10 @@ ThreeJSViewActionStore = (function () {
 		return new THREE.OrthographicCamera(width / -2, width / 2, height / 2, height / -2, near, far);
 	};
 	
+	var _setPlugin = function _setPlugin (plugin) {
+		_state.plugin = plugin;
+	};
+	
 	var _buildMesh = function _buildMesh (url, width, height, depth, shape) {
 		let bitmap = new Image();
 		bitmap.src = url;
@@ -211,6 +215,7 @@ ThreeJSViewActionStore = (function () {
 	};
 	
 	return {
+		setPlugin: _setPlugin,
 		getAll: _getAll,
 		getState: _getState
 	}

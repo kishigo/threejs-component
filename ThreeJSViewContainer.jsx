@@ -51,3 +51,4 @@ ThreeJSViewContainer = React.createClass({
 
 var fakeState = 0;
 var listener;
+var foo = ThreeJSViewContainer;

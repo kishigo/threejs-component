@@ -53,6 +53,7 @@ ThreeJSView = React.createClass({
 		let renderCanvas = this.refs.threeJSCanvas;
 		console.log('componentDidMount, canvas: ' + renderCanvas);
 		this.configureCanvas(renderCanvas);
+		this.plugin = this.props.state.plugin;
 		if (!this.threeScene) {
 			this.threeScene = new THREE.Scene();
 		}
@@ -88,6 +89,10 @@ ThreeJSView = React.createClass({
 		stupidFunction(renderCanvas);
 		this.configureThreeJSView(renderCanvas);
 		
+		if (this.plugin) {
+			this.plugin.setContext(this.threeScene, this.threeCamera, this.threeRenderer);
+		}
+		
 		var light = new THREE.SpotLight(0xFFFFFF);
 		light.position.set(100,100,2500);
 		this.threeScene.add(light);
@@ -103,38 +108,7 @@ ThreeJSView = React.createClass({
 	shouldComponentUpdate: function shouldComponentUpdate (nextProps, nextState) {
 		console.log('ThreeJSView: shouldComponentUpdate: ENTRY');
 		let action = nextProps.state.action;
-		var delta;
-		switch (action.constructor.name) {
-		case 'ActionZoom':
-			let testZoom = true;
-			if (testZoom) {
-				delta = (action.direction === ActionType.ZoomIn) ? 0.2 : -0.2;
-				this.threeCamera.zoom += delta;
-				this.threeCamera.updateProjectionMatrix();
-			}
-			else {
-				delta = (action.direction === ActionType.ZoomIn) ? -action.zUnits : action.zUnits;
-				this.threeCamera.position.z += delta;
-			}
-			break;
-		case 'ActionRotate':
-			this.rotateCameraAroundScene(action.speed, action.direction);
-			break;
-		case 'ActionPan':
-			this.panCameraAcrossScene(action.direction, action.delta);
-			break;
-		case 'ActionCamera':
-			delta = (action.direction === ActionType.CameraUp) ? action.delta : -action.delta;
-			this.threeCamera.position.y += delta;
-			break;
-		case 'ActionAddMesh':
-			this.threeScene.add(action.mesh);
-			break;
-		case 'ActionSetCamera':
-			this.threeCamera = action.camera;
-			this.threeCamera.position.z = 100;
-			break;
-		}
+		this.plugin.handleAction(action);
 		return !this.isMounted();
 	},
 	getRenderer: function getRenderer (canvas) {
@@ -189,29 +163,6 @@ ThreeJSView = React.createClass({
 			this.threeControls.update();
 			this.threeRenderer.render(this.threeScene, this.threeCamera)
 		}
-	},
-	rotateCameraAroundScene: function rotateCameraAroundScene (rotSpeed, direction) {
-		var x = this.threeCamera.position.x,
-			z = this.threeCamera.position.z;
-	
-		if (direction === ActionType.RotateLt){
-			this.threeCamera.position.x = x * Math.cos(rotSpeed) + z * Math.sin(rotSpeed);
-			this.threeCamera.position.z = z * Math.cos(rotSpeed) - x * Math.sin(rotSpeed);
-		} else if (direction === ActionType.RotateRt){
-			this.threeCamera.position.x = x * Math.cos(rotSpeed) - z * Math.sin(rotSpeed);
-			this.threeCamera.position.z = z * Math.cos(rotSpeed) + x * Math.sin(rotSpeed);
-		}
-	
-		this.threeCamera.lookAt(this.threeScene.position);
-	},
-	panCameraAcrossScene: function panCameraAcrossScene (direction, delta) {
-		if (direction === ActionType.PanLt) {
-			this.threeScene.position.x -= delta;
-		}
-		else if (direction === ActionType.PanRt) {
-			this.threeScene.position.x += delta;
-		}
-		this.threeCamera.lookAt(this.threeScene.position);
 	}
 });
 
