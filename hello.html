@@ -14,6 +14,10 @@
 </body>
 
 <template name="hello">
+    <button id="initialize">Initialize</button>
+    <button id="sampleMesh">Sample Mesh</button><br>
+    <button id="orthographicCamera">Orthographic Camera</button>
+    <button id="perspectiveCamera">Perspective Camera</button><br>
     <button id="zoomIn">ZoomIn</button>
     <button id="zoomOut">ZoomOut</button>
     <button id="panRt">Pan Right</button>
@@ -22,7 +26,6 @@
     <button id="rotLt">Rotate Left</button>
     <button id="cameraUp">Camera Up</button>
     <button id="cameraDn">Camera Down</button>
-    <button id="sampleMesh">Sample Mesh</button>
 
     <div>{{> React component=ThreeJSViewContainer userId=_id}}</div>
 </template>

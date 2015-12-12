@@ -69,12 +69,21 @@ ActionCamera = class ActionCamera extends AbstractAction {
 	}
 };
 
+ActionSetCamera = class ActionSetCamera extends AbstractAction {
+	constructor (camera) {
+		super();
+		this.camera = camera;
+	}
+};
+
 ActionAddMesh = class ActionAddMesh extends AbstractAction {
 	constructor (mesh) {
 		super();
 		this.mesh = mesh;
 	}
 };
+
+
 
 ThreeJSViewActionStore = (function () {
 	const EVENT_TYPE = 'ThreeJSViewActionStore';
@@ -84,6 +93,13 @@ ThreeJSViewActionStore = (function () {
 			console.log('TEST_TRIGGER');
 			//MBus.publish('_change_', null);
 			EventEx.emit('_change_', {data: null});
+			break;
+		case 'TEST_INIT':
+			// Build sample ground
+			let dims = {width: 10, height: 4};
+			var ground = _buildGround(dims);
+			_state.action = new ActionAddMesh(ground);
+			EventEx.emit(EVENT_TYPE, {data: null});
 			break;
 		case 'ZOOM_IN':
 			_state.action = new ActionZoom(ActionType.ZoomIn, 10);
@@ -109,6 +125,14 @@ ThreeJSViewActionStore = (function () {
 			_state.action = new ActionPan(ActionType.PanLt, 10);
 			EventEx.emit(EVENT_TYPE, {data: null});
 			break;
+		case 'SET_ORTHO_CAMERA':
+			_state.action = new ActionSetCamera(_createOrthographicCamera(800, 400, -100, 100));
+			EventEx.emit(EVENT_TYPE, {data: null});
+			break;
+		case 'SET_PERSPECTIVE_CAMERA':
+			_state.action = new ActionSetCamera(_createPerspectiveCamera(75, 400/300, 0.1, 1000));
+			EventEx.emit(EVENT_TYPE, {data: null});
+			break;
 		case 'CAMERA_UP':
 			_state.action = new ActionCamera(ActionType.CameraUp, 10);
 			EventEx.emit(EVENT_TYPE, {data: null});
@@ -126,6 +150,14 @@ ThreeJSViewActionStore = (function () {
 	
 	var _state = {
 		camera: CameraType.perspective
+	};
+	
+	var _createPerspectiveCamera = function _createPerspectiveCamera (viewAngle, aspect, near, far) {
+		return new THREE.PerspectiveCamera(viewAngle, aspect, near, far);
+	};
+	
+	var _createOrthographicCamera = function _createOrthographicCamera (width, height, near, far) {
+		return new THREE.OrthographicCamera(width / -2, width / 2, height / 2, height / -2, near, far);
 	};
 	
 	var _buildMesh = function _buildMesh (url, width, height, depth, shape) {
@@ -154,6 +186,19 @@ ThreeJSViewActionStore = (function () {
 		// adjust x
 		mesh.position.x = 0;
 		mesh.position.z = 0;
+		return mesh;
+	};
+	
+	var _buildGround = function _buildGround (dims) {
+		var w = dims.width * 10;
+		var h = dims.height * 10;
+		var geometry = new THREE.PlaneGeometry(w, h);
+		//var material = new THREE.MeshPhongMaterial({ ambient: 0x050505, color: 0x0033ff, specular: 0x555555, shininess: 30 });
+		var material = new THREE.MeshBasicMaterial( { color: 0xd2b48c } );
+		var mesh = new THREE.Mesh(geometry, material);
+		mesh.position.y = -20;
+		mesh.rotation.x = -Math.PI/2; //-90 degrees around the xaxis
+		mesh.doubleSided = true;
 		return mesh;
 	};
 	

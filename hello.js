@@ -17,6 +17,10 @@ if (Meteor.isClient) {
 	});
 
 	Template.hello.events({
+		'click #initialize': function () {
+			// Just add a ground reference plane
+			Dispatcher.dispatch('TEST_INIT');
+		},
 		'click #zoomIn': function () {
 			// increment the counter when button is clicked
 			//Session.set('counter', Session.get('counter') + 1);
@@ -59,6 +63,12 @@ if (Meteor.isClient) {
 		},
 		'click #sampleMesh': function () {
 			Dispatcher.dispatch('TEST_MESH');
+		},
+		'click #orthographicCamera': function () {
+			Dispatcher.dispatch('SET_ORTHO_CAMERA');
+		},
+		'click #perspectiveCamera': function () {
+			Dispatcher.dispatch('SET_PERSPECTIVE_CAMERA');
 		}
 	});
 }

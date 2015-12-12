@@ -52,7 +52,7 @@ ThreeJSView = React.createClass({
 		// Use a ref to get the underlying DOM element once we are mounted
 		let renderCanvas = this.refs.threeJSCanvas;
 		console.log('componentDidMount, canvas: ' + renderCanvas);
-        this.configureCanvas(renderCanvas);
+		this.configureCanvas(renderCanvas);
 		if (!this.threeScene) {
 			this.threeScene = new THREE.Scene();
 		}
@@ -62,7 +62,7 @@ ThreeJSView = React.createClass({
 			}
 			else {
 				let width = this.props.canvasWidth, height = this.props.canvasHeight;
-				this.threeCamera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, this.props.NEAR, this.props.FAR );
+				this.threeCamera = new THREE.OrthographicCamera(width / -2, width / 2, height / 2, height / -2, this.props.NEAR, this.props.FAR);
 
 			}
 		}
@@ -81,16 +81,12 @@ ThreeJSView = React.createClass({
 			this.threeControls.staticMoving = true;
 			this.threeControls.dynamicDampingFactor = 0.3;
 
-			this.threeControls.keys = [ 65, 83, 68 ];
+			this.threeControls.keys = [65, 83, 68];
 
-			this.threeControls.addEventListener( 'change', this.render );
+			this.threeControls.addEventListener('change', this.render);
 		}
 		stupidFunction(renderCanvas);
 		this.configureThreeJSView(renderCanvas);
-		this.customTest('hello internal');
-		let dims = {width: 10, height: 4};
-		var ground = this.buildGround(dims);
-		this.threeScene.add(ground);
 		
 		var light = new THREE.SpotLight(0xFFFFFF);
 		light.position.set(100,100,2500);
@@ -110,8 +106,16 @@ ThreeJSView = React.createClass({
 		var delta;
 		switch (action.constructor.name) {
 		case 'ActionZoom':
-			delta = (action.direction === ActionType.ZoomIn) ? -action.zUnits : action.zUnits;
-			this.threeCamera.position.z += delta;
+			let testZoom = true;
+			if (testZoom) {
+				delta = (action.direction === ActionType.ZoomIn) ? 0.2 : -0.2;
+				this.threeCamera.zoom += delta;
+				this.threeCamera.updateProjectionMatrix();
+			}
+			else {
+				delta = (action.direction === ActionType.ZoomIn) ? -action.zUnits : action.zUnits;
+				this.threeCamera.position.z += delta;
+			}
 			break;
 		case 'ActionRotate':
 			this.rotateCameraAroundScene(action.speed, action.direction);
@@ -126,11 +130,12 @@ ThreeJSView = React.createClass({
 		case 'ActionAddMesh':
 			this.threeScene.add(action.mesh);
 			break;
+		case 'ActionSetCamera':
+			this.threeCamera = action.camera;
+			this.threeCamera.position.z = 100;
+			break;
 		}
 		return !this.isMounted();
-	},
-	customTest: function (xxx) {
-		console.log('customTest, xxx: ' + xxx);
 	},
 	getRenderer: function getRenderer (canvas) {
 		// Detect webgl, fallback to canvas if missing.  Test is from mr.doob sample code to detect webgl
@@ -174,18 +179,6 @@ ThreeJSView = React.createClass({
 		canvas.height = height;
 		canvas.width = width;
 		this.threeControls.handleResize();
-	},
-	buildGround: function buildGround (dims) {
-		var w = dims.width * 10;
-		var h = dims.height * 10;
-		var geometry = new THREE.PlaneGeometry(w, h);
-		//var material = new THREE.MeshPhongMaterial({ ambient: 0x050505, color: 0x0033ff, specular: 0x555555, shininess: 30 });
-		var material = new THREE.MeshBasicMaterial( { color: 0xd2b48c } );
-		var mesh = new THREE.Mesh(geometry, material);
-		mesh.position.y = -20;
-		mesh.rotation.x = -Math.PI/2; //-90 degrees around the xaxis
-		mesh.doubleSided = true;
-		return mesh;
 	},
 	threeRender: function threeRender () {
 		this.threeRenderer.render(this.threeScene, this.threeCamera);
