@@ -40,7 +40,7 @@ ThreeJSViewContainer = React.createClass({
     },
     componentDidMount: function componentDidMount () {
         console.log('ThreeJSViewContainer:componentDidMount');
-		listener = function (bar) {
+		let listener = function (bar) {
 			console.log('Event: ThreeJSViewActionStore');
 			let state = ThreeJSViewActionStore.getAll();
 			this.setState(state);
@@ -49,6 +49,3 @@ ThreeJSViewContainer = React.createClass({
     }
 });
 
-var fakeState = 0;
-var listener;
-var foo = ThreeJSViewContainer;

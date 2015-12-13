@@ -92,6 +92,8 @@ ThreeJSViewPlugin = class ThreeJSViewPlugin {
 };
 
 // Set the plugin part of ThreeJSView
-Meteor.startup(function () {
-	ThreeJSViewActionStore.setPlugin(new ThreeJSViewPlugin());
-});
+if (Meteor.isClient) {
+	Meteor.startup(function () {
+		ThreeJSViewActionStore.setPlugin(new ThreeJSViewPlugin());
+	});
+}
