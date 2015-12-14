@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+// Sample store
 ActionType = {
 	ZoomIn: 0,
 	ZoomOut: 1,
@@ -33,6 +34,7 @@ ActionType = {
 	AddMesh: 8
 };
 
+// Sample actions
 AbstractAction = class AbstractAction {
 	constructor () {}
 };
@@ -159,11 +161,24 @@ ThreeJSViewActionStore = (function () {
 	var _createOrthographicCamera = function _createOrthographicCamera (width, height, near, far) {
 		return new THREE.OrthographicCamera(width / -2, width / 2, height / 2, height / -2, near, far);
 	};
-	
+	/**
+	 * callback to get the plugin which supports app specific rendering
+	 * @param {object} plugin - User defined per specific component usage.
+	 * @private
+	 */
 	var _setPlugin = function _setPlugin (plugin) {
 		_state.plugin = plugin;
 	};
-	
+	/**
+	 * Sample to build simple mesh
+	 * @param url
+	 * @param width
+	 * @param height
+	 * @param depth
+	 * @param shape
+	 * @returns {THREE.Mesh}
+	 * @private
+	 */
 	var _buildMesh = function _buildMesh (url, width, height, depth, shape) {
 		let bitmap = new Image();
 		bitmap.src = url;
@@ -192,7 +207,12 @@ ThreeJSViewActionStore = (function () {
 		mesh.position.z = 0;
 		return mesh;
 	};
-	
+	/**
+	 * Builds a reference ground plane
+	 * @param dims
+	 * @returns {THREE.Mesh}
+	 * @private
+	 */
 	var _buildGround = function _buildGround (dims) {
 		var w = dims.width * 10;
 		var h = dims.height * 10;
@@ -210,13 +230,8 @@ ThreeJSViewActionStore = (function () {
 		return _state;
 	};
 	
-	var _getState = function _getState () {
-		return _state;
-	};
-	
 	return {
 		setPlugin: _setPlugin,
-		getAll: _getAll,
-		getState: _getState
+		getAll: _getAll
 	}
 })();

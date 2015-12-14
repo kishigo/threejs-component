@@ -35,8 +35,7 @@ ThreeJSViewContainer = React.createClass({
 	},
     render: function render () {
         console.log('ThreeJSViewContainer:render, threeJSViewData: ' + this.threeJSViewData);
-		// Use POJS so we can pass an entire props object instead of specifying individual fields
-		return React.createElement(ThreeJSView, this.threeJSViewData);
+		return <ThreeJSView {...this.threeJSViewData} />
     },
     componentDidMount: function componentDidMount () {
         console.log('ThreeJSViewContainer:componentDidMount');

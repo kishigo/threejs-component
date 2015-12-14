@@ -40,6 +40,10 @@ ThreeJSView = React.createClass({
 			canvasHeight: 600
 		};
 	},
+	/**
+	 * For threejs components which render themselves, this is a one time action
+	 * @returns {XML}
+	 */
 	render: function () {
 		console.log('ThreeJSView:render');
 		return (<div className="ThreeJSView" ref='threeJSView' align="center"
@@ -48,6 +52,9 @@ ThreeJSView = React.createClass({
 					style={{display: 'table-row', backgroundColor: '#222222'}}></canvas>
 		</div>);
 	},
+	/**
+	 * Set up the threejs basic render context, controls
+	 */
 	componentDidMount: function () {
 		// Use a ref to get the underlying DOM element once we are mounted
 		let renderCanvas = this.refs.threeJSCanvas;
@@ -86,8 +93,7 @@ ThreeJSView = React.createClass({
 
 			this.threeControls.addEventListener('change', this.render);
 		}
-		stupidFunction(renderCanvas);
-		this.configureThreeJSView(renderCanvas);
+		this.threeControls.handleResize();
 		
 		if (this.plugin) {
 			this.plugin.setContext(this.threeScene, this.threeCamera, this.threeRenderer);
@@ -102,15 +108,29 @@ ThreeJSView = React.createClass({
 		this.threeAnimate();
 		this.threeRender();
 	},
+	/**
+	 * Clear out threejs context on unmount
+	 */
 	componentWillUnmount: function componentWillUnmount () {
 		this.threeControls = this.threeScene = this.threeCamera = this.threeRenderer = null;
 	},
+	/**
+	 * This is where we proxy action to plugin and also prevent vdom activity
+	 * @param nextProps
+	 * @param nextState
+	 * @returns {boolean}
+	 */
 	shouldComponentUpdate: function shouldComponentUpdate (nextProps, nextState) {
 		console.log('ThreeJSView: shouldComponentUpdate: ENTRY');
 		let action = nextProps.state.action;
 		this.plugin.handleAction(action);
 		return !this.isMounted();
 	},
+	/**
+	 * Detect webgl and return appropriate threejs renderer, prefer webgl
+	 * @param {object} canvas - dom item
+	 * @returns {*} - threejs renderer
+	 */
 	getRenderer: function getRenderer (canvas) {
 		// Detect webgl, fallback to canvas if missing.  Test is from mr.doob sample code to detect webgl
 		try {
@@ -121,6 +141,10 @@ ThreeJSView = React.createClass({
 			return new THREE.CanvasRenderer({canvas: canvas});
 		}
 	},
+	/**
+	 * Compute canvas height and width
+	 * @param canvas - dom item, mutate height and width on it
+	 */
     configureCanvas: function configureCanvas (canvas) {
         var renderContainer = this.refs.threeJSView;
         var width;
@@ -137,26 +161,15 @@ ThreeJSView = React.createClass({
         canvas.height = height;
         canvas.width = width;
     },
-	configureThreeJSView: function configureThreeJSView (canvas) {
-		var renderContainer = this.refs.threeJSView;
-		var width;
-		var height;
-		// set area either from container or props if no container
-		if (!this.props.testMode && renderContainer) {
-			width = renderContainer.clientWidth;
-			height = renderContainer.clientHeight;
-		}
-		else {
-			width = this.props.canvasWidth;
-			height = this.props.canvasHeight;
-		}
-		canvas.height = height;
-		canvas.width = width;
-		this.threeControls.handleResize();
-	},
+	/**
+	 * wrapper around the threejs render call
+	 */
 	threeRender: function threeRender () {
 		this.threeRenderer.render(this.threeScene, this.threeCamera);
 	},
+	/**
+	 * threejs render with RAF
+	 */
 	threeAnimate: function threeAnimate () {
 		if (this.runAnimation) {
 			requestAnimationFrame(this.threeAnimate);
@@ -165,8 +178,4 @@ ThreeJSView = React.createClass({
 		}
 	}
 });
-
-var stupidFunction = function stupidFunction(canvas) {
-	console.log('stupidFunction: ENTRY, canvas: ' + canvas);
-};
 

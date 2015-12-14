@@ -27,11 +27,23 @@ ThreeJSViewPlugin = class ThreeJSViewPlugin {
 		this.threeCamera = null;
 		this.threeRenderer = null;
 	}
+
+	/**
+	 * This should be called once the threejs engine is initialized
+	 * @param threeScene
+	 * @param threeCamera
+	 * @param threeRenderer
+	 */
 	setContext (threeScene, threeCamera, threeRenderer) {
 		this.threeScene = threeScene;
 		this.threeCamera = threeCamera;
 		this.threeRenderer = threeRenderer;
 	}
+
+	/**
+	 * Called from shouldComponentUpdate when it proxies action to here
+	 * @param {object} action - See ActionClass and extensions in the store
+	 */
 	handleAction (action) {
 		var delta;
 		switch (action.constructor.name) {
@@ -66,6 +78,12 @@ ThreeJSViewPlugin = class ThreeJSViewPlugin {
 			break;
 		}
 	}
+
+	/**
+	 * Example of camera rotation around center point of scene
+	 * @param rotSpeed
+	 * @param direction
+	 */
 	rotateCameraAroundScene (rotSpeed, direction) {
 		var x = this.threeCamera.position.x,
 			z = this.threeCamera.position.z;
@@ -80,6 +98,12 @@ ThreeJSViewPlugin = class ThreeJSViewPlugin {
 
 		this.threeCamera.lookAt(this.threeScene.position);
 	}
+
+	/**
+	 * Example of panning horizontally across scene
+	 * @param direction
+	 * @param delta
+	 */
 	panCameraAcrossScene (direction, delta) {
 		if (direction === ActionType.PanLt) {
 			this.threeScene.position.x -= delta;
