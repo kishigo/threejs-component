@@ -35,14 +35,14 @@ ThreeJSViewContainer = React.createClass({
 	},
     render: function render () {
         console.log('ThreeJSViewContainer:render, threeJSViewData: ' + this.threeJSViewData);
-		return <ThreeJSView {...this.threeJSViewData} />
+		return <ThreeJSView {...this.threeJSViewData} ref={'threeJSView'} />
     },
     componentDidMount: function componentDidMount () {
         console.log('ThreeJSViewContainer:componentDidMount');
 		let listener = function (bar) {
 			console.log('Event: ThreeJSViewActionStore');
-			let state = ThreeJSViewActionStore.getAll();
-			this.setState(state);
+			// Pass the state to the real component whenever the store updates the state
+			this.refs.threeJSView.updateState(ThreeJSViewActionStore.getAll());
 		}.bind(this);
 		EventEx.on('ThreeJSViewActionStore', listener);
     }

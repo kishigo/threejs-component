@@ -116,6 +116,7 @@ ThreeJSView = React.createClass({
 	},
 	/**
 	 * This is where we proxy action to plugin and also prevent vdom activity
+	 * Note, this will prevent the entire subtree from updating so ideally, ThreeJSView should be a leaf node
 	 * @param nextProps
 	 * @param nextState
 	 * @returns {boolean}
@@ -176,6 +177,11 @@ ThreeJSView = React.createClass({
 			this.threeControls.update();
 			this.threeRenderer.render(this.threeScene, this.threeCamera)
 		}
+	},
+	updateState: function updateState (state) {
+		console.log('ThreeJSView: updateState: ENTRY,state: ' + state);
+		// Just setState which will cause shouldComponentUpdate to fire
+		this.setState(state);
 	}
 });
 
