@@ -69,12 +69,6 @@ if (Meteor.isClient) {
 		},
 		'click #sampleMesh': function () {
 			Dispatcher.dispatch('TEST_MESH');
-		},
-		'click #orthographicCamera': function () {
-			Dispatcher.dispatch('SET_ORTHO_CAMERA');
-		},
-		'click #perspectiveCamera': function () {
-			Dispatcher.dispatch('SET_PERSPECTIVE_CAMERA');
 		}
 	});
 }

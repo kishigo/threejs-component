@@ -63,10 +63,6 @@ ThreeJSViewPlugin = class ThreeJSViewPlugin {
 		case 'ActionAddMesh':
 			this.threeScene.add(action.mesh);
 			break;
-		case 'ActionSetCamera':
-			this.threeCamera = action.camera;
-			this.threeCamera.position.z = 100;
-			break;
 		}
 	}
 	zoomCameraOnScene (direction, delta) {
