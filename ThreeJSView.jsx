@@ -34,10 +34,7 @@ ThreeJSView = React.createClass({
         canvasWidth: React.PropTypes.number.isRequired,
         canvasHeight: React.PropTypes.number.isRequired
     },
-	threeJSViewData: {canvasWidth: 900, canvasHeight: 700, testMode: true, WIDTH: 400, HEIGHT: 300, VIEW_ANGLE: 75, NEAR: 0.1, FAR: 1000},
 	getDefaultProps: function () {
-		//let foo = {canvasWidth: 900, canvasHeight: 700, testMode: true, WIDTH: 400, HEIGHT: 300, ASPECT: 400/300, VIEW_ANGLE: 75, NEAR: 0.1, FAR: 1000};
-		//this.foo.ASPECT = foo.WIDTH / foo.HEIGHT;
 		return {canvasWidth: 900, canvasHeight: 700, testMode: true, WIDTH: 400, HEIGHT: 300, ASPECT: 400/300, VIEW_ANGLE: 75, NEAR: 0.1, FAR: 1000};
 	},
 	getInitialState: function getInitialState () {
@@ -188,11 +185,6 @@ ThreeJSView = React.createClass({
 			this.threeControls.update();
 			this.threeRenderer.render(this.threeScene, this.threeCamera)
 		}
-	},
-	updateState: function updateState (state) {
-		console.log('ThreeJSView: updateState: ENTRY,state: ' + state);
-		// Just setState which will cause shouldComponentUpdate to fire
-		this.setState(state);
 	}
 });
 

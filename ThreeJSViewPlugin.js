@@ -48,16 +48,7 @@ ThreeJSViewPlugin = class ThreeJSViewPlugin {
 		var delta;
 		switch (action.constructor.name) {
 		case 'ActionZoom':
-			let testZoom = true;
-			if (testZoom) {
-				delta = (action.direction === ActionType.ZoomIn) ? 0.2 : -0.2;
-				this.threeCamera.zoom += delta;
-				this.threeCamera.updateProjectionMatrix();
-			}
-			else {
-				delta = (action.direction === ActionType.ZoomIn) ? -action.zUnits : action.zUnits;
-				this.threeCamera.position.z += delta;
-			}
+			this.zoomCameraOnScene(action.direction, action.delta);
 			break;
 		case 'ActionRotate':
 			this.rotateCameraAroundScene(action.speed, action.direction);
@@ -78,7 +69,12 @@ ThreeJSViewPlugin = class ThreeJSViewPlugin {
 			break;
 		}
 	}
-
+	zoomCameraOnScene (direction, delta) {
+		delta = (direction === ActionType.ZoomIn) ? 0.2 : -0.2;
+		this.threeCamera.zoom += delta;
+		this.threeCamera.updateProjectionMatrix();
+		this.threeCamera.lookAt(this.threeScene.position);
+	}
 	/**
 	 * Example of camera rotation around center point of scene
 	 * @param rotSpeed

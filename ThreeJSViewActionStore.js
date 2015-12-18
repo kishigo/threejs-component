@@ -40,10 +40,10 @@ AbstractAction = class AbstractAction {
 };
 
 ActionZoom = class ActionZoom extends AbstractAction {
-	constructor (direction, zUnits) {
+	constructor (direction, delta) {
 		super();
 		this.direction = direction;
-		this.zUnits = zUnits;
+		this.delta = delta;
 	}
 };
 
@@ -104,11 +104,11 @@ ThreeJSViewActionStore = (function () {
 			EventEx.emit(EVENT_TYPE, {data: null});
 			break;
 		case 'ZOOM_IN':
-			_state.action = new ActionZoom(ActionType.ZoomIn, 10);
+			_state.action = new ActionZoom(ActionType.ZoomIn, 0.2);
 			EventEx.emit(EVENT_TYPE, {data: null});
 			break;
 		case 'ZOOM_OUT':
-			_state.action = new ActionZoom(ActionType.ZoomOut, 10);
+			_state.action = new ActionZoom(ActionType.ZoomOut, 0.2);
 			EventEx.emit(EVENT_TYPE, {data: null});
 			break;
 		case 'ROT_RT':
