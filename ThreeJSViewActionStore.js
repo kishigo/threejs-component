@@ -231,6 +231,7 @@ ThreeJSViewActionStore = (function () {
 	};
 	
 	return {
+		name: 'ThreeJSViewActionStore',
 		setPlugin: _setPlugin,
 		getAll: _getAll
 	}

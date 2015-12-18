@@ -34,11 +34,14 @@ ThreeJSView = React.createClass({
         canvasWidth: React.PropTypes.number.isRequired,
         canvasHeight: React.PropTypes.number.isRequired
     },
+	threeJSViewData: {canvasWidth: 900, canvasHeight: 700, testMode: true, WIDTH: 400, HEIGHT: 300, VIEW_ANGLE: 75, NEAR: 0.1, FAR: 1000},
 	getDefaultProps: function () {
-		return {
-			canvasWidth: 800,
-			canvasHeight: 600
-		};
+		//let foo = {canvasWidth: 900, canvasHeight: 700, testMode: true, WIDTH: 400, HEIGHT: 300, ASPECT: 400/300, VIEW_ANGLE: 75, NEAR: 0.1, FAR: 1000};
+		//this.foo.ASPECT = foo.WIDTH / foo.HEIGHT;
+		return {canvasWidth: 900, canvasHeight: 700, testMode: true, WIDTH: 400, HEIGHT: 300, ASPECT: 400/300, VIEW_ANGLE: 75, NEAR: 0.1, FAR: 1000};
+	},
+	getInitialState: function getInitialState () {
+		return this.props.store.getAll();
 	},
 	/**
 	 * For threejs components which render themselves, this is a one time action
@@ -60,12 +63,20 @@ ThreeJSView = React.createClass({
 		let renderCanvas = this.refs.threeJSCanvas;
 		console.log('componentDidMount, canvas: ' + renderCanvas);
 		this.configureCanvas(renderCanvas);
-		this.plugin = this.props.state.plugin;
+		this.plugin = this.state.plugin;
+		let storeName = this.props.store.name;
+		let listener = function (bar) {
+			console.log('Event: ' + storeName);
+			// Pass the state to the real component whenever the store updates the state
+			this.setState(this.props.store.getAll());
+		}.bind(this);
+		EventEx.on(storeName, listener);
+
 		if (!this.threeScene) {
 			this.threeScene = new THREE.Scene();
 		}
 		if (!this.threeCamera) {
-			if (this.props.state.camera === CameraType.perspective) {
+			if (this.state.camera === CameraType.perspective) {
 				this.threeCamera = new THREE.PerspectiveCamera(this.props.VIEW_ANGLE, this.props.ASPECT, this.props.NEAR, this.props.FAR);
 			}
 			else {
@@ -123,7 +134,7 @@ ThreeJSView = React.createClass({
 	 */
 	shouldComponentUpdate: function shouldComponentUpdate (nextProps, nextState) {
 		console.log('ThreeJSView: shouldComponentUpdate: ENTRY');
-		let action = nextProps.state.action;
+		let action = nextState.action;
 		this.plugin.handleAction(action);
 		return !this.isMounted();
 	},
