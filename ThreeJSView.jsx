@@ -169,6 +169,7 @@ ThreeJSView = React.createClass({
 	 * Clear out threejs context on unmount
 	 */
 	componentWillUnmount: function componentWillUnmount () {
+		this.runAnimation = false;
 		this.threeControls = this.threeScene = this.threeCamera = this.threeRenderer = null;
 		window.removeEventListener('resize', this.handleResize)
 	},
