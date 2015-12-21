@@ -35,10 +35,10 @@ ThreeJSView = React.createClass({
         canvasHeight: React.PropTypes.number.isRequired
     },
 	getDefaultProps: function () {
-		return {canvasWidth: 900, canvasHeight: 700, testMode: true, WIDTH: 400, HEIGHT: 300, ASPECT: 400/300, VIEW_ANGLE: 75, NEAR: 0.1, FAR: 1000};
+		return {canvasWidth: 900, canvasHeight: 700, testMode: false, WIDTH: 400, HEIGHT: 300, ASPECT: 400/300, VIEW_ANGLE: 75, NEAR: 0.1, FAR: 1000};
 	},
 	getInitialState: function getInitialState () {
-		return this.props.store.getAll();
+		return this.getStateFromStore();
 	},
 	/**
 	 * For threejs components which render themselves, this is a one time action
@@ -52,6 +52,57 @@ ThreeJSView = React.createClass({
 					style={{display: 'table-row', backgroundColor: '#222222'}}></canvas>
 		</div>);
 	},
+	handleResize: function (e) {
+		console.log('handleResize: ' + e);
+		let renderCanvas = this.refs.threeJSCanvas;
+		this.configureCanvas(renderCanvas);
+		this.threeControls.handleResize();
+	},
+	getStateFromStore: function () {
+		return this.getBoundStateFromStore();
+	},
+	getBoundStateFromStore: function () {
+		if (this.boundGetAll) {
+			return this.boundGetAll();
+		}
+		else {
+			if (this.props.store && this.props.store.hasOwnProperty('getAll')) {
+				this.boundGetAll = this.props.store.getAll;
+				return this.boundGetAll();
+			}
+			else {
+				return {};
+			}
+		}
+	},
+	setupStore: function () {
+		if (this.props.store) {
+			if (this.props.store.hasOwnProperty('name')) {
+				let storeName = this.props.store.name;
+				let listener = function () {
+					console.log('Event: ' + storeName);
+					// Pass the state to the real component whenever the store updates the state
+					this.setState(this.getStateFromStore());
+				}.bind(this);
+				EventEx.on(storeName, listener);
+			}
+		}
+	},
+	getPluginFromState: function () {
+		if (this.plugin) {
+			return plugin;
+		}
+		else {
+			if (this.state && this.state.hasOwnProperty('plugin')) {
+				this.plugin = this.state.plugin;
+				return this.plugin;
+
+			}
+			else {
+				return null;
+			}
+		}
+	},
 	/**
 	 * Set up the threejs basic render context, controls
 	 */
@@ -60,19 +111,16 @@ ThreeJSView = React.createClass({
 		let renderCanvas = this.refs.threeJSCanvas;
 		console.log('componentDidMount, canvas: ' + renderCanvas);
 		this.configureCanvas(renderCanvas);
-		this.plugin = this.state.plugin;
-		let storeName = this.props.store.name;
-		let listener = function (bar) {
-			console.log('Event: ' + storeName);
-			// Pass the state to the real component whenever the store updates the state
-			this.setState(this.props.store.getAll());
-		}.bind(this);
-		EventEx.on(storeName, listener);
+		this.plugin = this.getPluginFromState();
+		this.setupStore();
 
 		if (!this.threeScene) {
 			this.threeScene = new THREE.Scene();
 		}
 		if (!this.threeCamera) {
+			if (!this.state.camera) {
+				this.state.camera = CameraType.perspective;
+			}
 			if (this.state.camera === CameraType.perspective) {
 				this.threeCamera = new THREE.PerspectiveCamera(this.props.VIEW_ANGLE, this.props.ASPECT, this.props.NEAR, this.props.FAR);
 			}
@@ -115,12 +163,14 @@ ThreeJSView = React.createClass({
 		this.runAnimation = true;
 		this.threeAnimate();
 		this.threeRender();
+		window.addEventListener('resize', this.handleResize)
 	},
 	/**
 	 * Clear out threejs context on unmount
 	 */
 	componentWillUnmount: function componentWillUnmount () {
 		this.threeControls = this.threeScene = this.threeCamera = this.threeRenderer = null;
+		window.removeEventListener('resize', this.handleResize)
 	},
 	/**
 	 * This is where we proxy action to plugin and also prevent vdom activity
@@ -132,7 +182,9 @@ ThreeJSView = React.createClass({
 	shouldComponentUpdate: function shouldComponentUpdate (nextProps, nextState) {
 		console.log('ThreeJSView: shouldComponentUpdate: ENTRY');
 		let action = nextState.action;
-		this.plugin.handleAction(action);
+		if (this.plugin) {
+			this.plugin.handleAction(action);
+		}
 		return !this.isMounted();
 	},
 	/**
