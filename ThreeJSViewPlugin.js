@@ -105,6 +105,9 @@ ThreeJSViewPlugin = class ThreeJSViewPlugin {
 		}
 		this.threeCamera.lookAt(this.threeScene.position);
 	}
+	resizeLayout (width, height) {
+		console.log('resizeLayout: ' + width + ", " + height);
+	}
 };
 
 // Set the plugin part of ThreeJSView
